@@ -11,9 +11,9 @@ const styles = {
 // Connect Wallet
 
 const Header = () => {
-    const { connectWallet, currentAccount, currentUser, formattedUser } = useContext(BlockchainContext);
+    const { connectWallet, signOut, currentAccount, isAuthenticated, formattedAccount, accountName } = useContext(BlockchainContext);
 
-    console.log(currentAccount, currentUser);
+    console.log(currentAccount, formattedAccount);
 
   return (
     <div className={styles.container}>
@@ -22,14 +22,15 @@ const Header = () => {
             <div className={styles.menuItem}>Rewards</div>
             <div className={styles.menuItem}>Portfolio</div>
             <div className={styles.menuItem}>Cash</div>
-            <div className={styles.menuItem}>Messages</div>
+            <div className={styles.menuItem}>Messages</div> 
             
 
-            {currentAccount ? (
+            {isAuthenticated ? (
                 <>
+                    <div className={styles.menuItem}>{accountName?.split(' ')[0]}</div>
                     <div className={styles.menuItem}>
                         {
-                            formattedUser
+                            formattedAccount
                         }
                     </div>
                     <div className={styles.menuItem} onClick={() => signOut()}>

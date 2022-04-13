@@ -1,67 +1,46 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { faker } from '@faker-js/faker'
+import { useMoralis } from 'react-moralis'
 
 export const BlockchainContext = createContext();
 
 export const BlockchainProvider = ({ children }) => {
-    const [currentAccount, setCurrentAccount] = useState()
-    const [formattedUser, setFormattedUser] = useState()
-    const [currentUser, setCurrentUser] = useState([])
 
-    useEffect(() => {
-        checkIfWalletIsConnected()
-    }, [])
+    const { isAuthenticated, authenticate, user, logout, Moralis, enableWeb3 } = useMoralis()
+
+    const [accountName, setAccountName] = useState()
+    const [currentAccount, setCurrentAccount] = useState()
+    const [formattedAccount, setFormattedAccount] = useState()
 
     useEffect(() => {
         if (!currentAccount) return
         requestToGetCurrentUserInfo(currentAccount);
     }, [currentAccount])
 
+    useEffect(() => {
+        if (isAuthenticated){
+            const account = user.get('ethAddress');
+            const formatAccount = account.slice(0, 7) + '...' + account.slice(35)
+            setFormattedAccount(formatAccount)
+            setCurrentAccount(account)
+        }
+    }, [isAuthenticated, enableWeb3])
+
+    useEffect(() => {
+        if (!currentAccount) return
+        requestToCreateUserOnSanity(currentAccount)
+    }, [currentAccount])
+
 
     const connectWallet = async () => {
-        if (!window.ethereum) return
-
-        try {
-            const addressArray = await window.ethereum.request({
-                method: 'eth_requestAccounts'
-            })
-
-            if (addressArray.length > 0) {
-                const formattedUser = addressArray[0].slice(0, 7) + '...' + addressArray[0].slice(35)
-                setCurrentAccount(addressArray[0])
-                setFormattedUser(formattedUser)
-                requestToCreateUserOnSanity(addressArray[0])
-            }
-
-        } catch (error) {
-            console.error(error)
-        }
+        authenticate()
     }
 
-    const checkIfWalletIsConnected = async () => {
-        if (!window.ethereum) return
-
-        try {
-            
-            const addressArray = await window.ethereum.request({
-                method: 'eth_accounts',
-            })
-
-            if (addressArray.length > 0){
-                const formattedUser = addressArray[0].slice(0, 7) + '...' + addressArray[0].slice(35)
-                setCurrentAccount(addressArray[0])
-                setFormattedUser(formattedUser)
-                requestToCreateUserOnSanity(addressArray[0])
-            }
-
-        } catch (error) {
-            console.error(error)
-        }
+    const signOut = () => {
+        logout();   
     }
 
     const requestToCreateUserOnSanity = async address => {
-        if (!window.ethereum) return
-
         try {
             await fetch('/api/db/createUser', {
                 method: 'POST',
@@ -83,7 +62,8 @@ export const BlockchainProvider = ({ children }) => {
 
             const data = await response.json()
             console.log(data);
-            setCurrentUser(data.data)
+            setCurrentAccount(data.data.walletAddress)
+            setAccountName(data.data.name)
 
         } catch (error) {
             console.error(error)
@@ -94,9 +74,11 @@ export const BlockchainProvider = ({ children }) => {
   return (
     <BlockchainContext.Provider value={{
         currentAccount,
-        currentUser,
         connectWallet,
-        formattedUser,
+        formattedAccount,
+        signOut,
+        isAuthenticated,
+        accountName
     }}>
         {children}
     </BlockchainContext.Provider>
