@@ -1,10 +1,15 @@
 import React, { useContext } from 'react'
 import { BlockchainContext } from '../context/BlockchainContext';
+import Image from 'next/image'
+import avatar from '../temp/avatar.png'
 
 const styles = {
-    container: 'flex w-screen h-16 bg-black px-24 py-3 mb-5 fixed justify-end',
-    rightHeader: 'flex items-center justify-end text-white gap-8',
-    menuItem: 'cursor-pointer font-bold hover:text-blue-500 duration-300',
+    wrapper: `h-16 w-full bg-black text-white flex md:justify-around items-center px-60 fixed z-20`,
+    leftMenu: `flex gap-3`,
+    rightMenu: `flex gap-3 items-center`,
+    menuItem: `text-lg text-white flex items-center mx-4 cursor-pointer font-bold hover:text-blue-500 duration-300`,
+    userImageContainer: `mr-2`,
+    userImage: `h-10 w-10 mr-4 rounded-full p-px object-cover cursor-pointer`,
 }
 
 // Signout Todo 
@@ -16,18 +21,30 @@ const Header = () => {
     console.log(currentAccount, formattedAccount);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.wrapper}>
 
-        <div className={styles.rightHeader}>
+        <div className={styles.leftMenu}>
             <div className={styles.menuItem}>Rewards</div>
             <div className={styles.menuItem}>Portfolio</div>
             <div className={styles.menuItem}>Cash</div>
             <div className={styles.menuItem}>Messages</div> 
             
+        </div>
+        <div className={styles.rightMenu}>
 
             {isAuthenticated ? (
                 <>
                     <div className={styles.menuItem}>{accountName?.split(' ')[0]}</div>
+                    <div className={styles.userImageContainer}>
+                        <Image
+                            className={styles.userImage}
+                            src={avatar}
+                            width={40}
+                            height={40}
+                            title='avatar'
+                            alt='avatar'
+                        />
+                    </div>
                     <div className={styles.menuItem}>
                         {
                             formattedAccount
