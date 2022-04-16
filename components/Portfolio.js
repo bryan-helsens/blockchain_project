@@ -31,6 +31,8 @@ const Portfolio = () => {
             address: '0x11405e115110810d770EFDf8376A83B0B24DCdeE'
         }).catch(e => console.error(e));
 
+        console.log(result);
+
         if (result){
             setEtherBalance(Moralis.Units.FromWei(result.balance))
         }
@@ -75,16 +77,17 @@ const Portfolio = () => {
                     <div className={styles.tableItem}>
                         <div className={styles.tableRow}>
                             <div className={styles.white} style={{ flex: 3 }}>Name</div>
-                            <div className={styles.white} style={{ flex: 2 }}>Balance</div>
+                            <div className={styles.white} style={{ flex: 2 }}>Amount</div>
+                            <div className={styles.white} style={{ flex: 2 }}>Balance</div>   
                         </div>
                     </div>
 
                     <div className={styles.divider}></div>
 
                     <div>
-                        { coins.map((coin, index) => (
-                            <div key={index} className={styles.white}>
-                                <Coin coin={coin} />
+                        {data && data.map(token => (
+                            <div key={token.symbol} className={styles.white}>
+                                <Coin coin={token} />
                                 <div className={styles.divider}></div>
                             </div>
                         ))}

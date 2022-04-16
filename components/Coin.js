@@ -1,4 +1,5 @@
 import React from 'react'
+import Moralis from 'moralis'
 import Image from 'next/image'
 
 const styles = {
@@ -12,6 +13,8 @@ const styles = {
 }
 
 const Coin = (coin) => {
+    console.log(coin);
+
     coin = coin.coin
   return (
     <div className={styles.wrapper}>
@@ -19,18 +22,22 @@ const Coin = (coin) => {
             <div style={{ flex: 3 }}>
                 <div className={styles.nameCol}>
                     <div className={styles.coinIcon}>
-                        <Image src={coin.logo} alt={coin.name} title={coin.name} />
+                        <Image src={"/btc.png"} height={150} width={150} alt={coin.name} title={coin.name} />
                     </div>
                     <div>
                         <div className={styles.primary}>{coin.name}</div>
-                        <div className={styles.secondary}>{coin.sign}</div>
+                        <div className={styles.secondary}>{coin.symbol}</div>
                     </div>
                 </div>
             </div>
 
+            <div style={{ flex: 2 }}>
+                <div className={styles.primary}>{Moralis.Units.FromWei(coin.balance)}</div>
+            </div>
+
             <div style={{ flex: 2 }} className={styles.left}>
-                <div className={styles.primary}>{'$'} {coin.balanceUsd}</div>
-                <div className={styles.secondary}>{coin.balanceCoin} {coin.sign}</div>
+                <div className={styles.primary}>{'$'} {Moralis.Units.FromWei(coin.balance) * 5}</div>
+                <div className={styles.secondary}>{coin.balanceCoin} {coin.symbol}</div>
             </div>
         </div>
     </div>
