@@ -1,47 +1,146 @@
 import React from 'react'
-import Moralis from 'moralis'
 import Image from 'next/image'
+import styled from 'styled-components'
+import { Line } from 'react-chartjs-2'
+import Chart from 'chart.js/auto'
 
-const styles = {
-    wrapper: `flex w-full justify-between items-center`,
-    nameCol: 'flex items-center',
-    coinIcon: 'w-7 mr-4',
-    center: 'w-full flex justify-between items-center p-2 pl-7 pt-4 pb-4 float-left',
-    primary: 'mb-[0.1rem]',
-    secondary: 'text-[#8a919e] text-[0.8rem]',
-    left: 'mr-5',
-}
+const Coin = ({coin}) => {
 
-const Coin = (coin) => {
-    console.log(coin);
+    const dataGraphLine = () => {
+        let data = []
+        for (let i = 0; i < coin.sparkline.length; i++) {
+          let value = parseFloat(coin.sparkline[i]).toFixed(2);
+          data = [...data, value]
+        }
+        return data
+      }
+    
+      const setGraphColor = () => {
+        if (coin.change < 0) {
+          return '#ef4b09'
+        } else {
+          return '#00ff1a'
+        }
+      }
+    
+      const data = {
+        labels: ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.','.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+        datasets: [
+          {
+            fill: false,
+            lineTension: 0.01,
+            backgroundColor: setGraphColor(),
+            borderColor: setGraphColor(),
+            borderCapStyle: 'butt',
+            borderDash: [],
+            borderDashOffset: 0.0,
+            borderJoinStyle: 'miter',
+            pointBorderColor: setGraphColor(),
+            pointBackgroundColor: setGraphColor(),
+            pointBorderWidth: 1,
+            pointHoverRadius: 5,
+            pointHoverBackgroundColor: setGraphColor(),
+            pointHoverBorderColor: setGraphColor(),
+            pointHoverBorderWidth: 2,
+            pointRadius: 1,
+            pointHitRadius: 10,
+            data: dataGraphLine(),
+          },
+        ],
+      }
+    
+      const options = {
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+      }
 
-    coin = coin.coin
+
   return (
-    <div className={styles.wrapper}>
-        <div className={styles.center}>
-            <div style={{ flex: 3 }}>
-                <div className={styles.nameCol}>
-                    <div className={styles.coinIcon}>
-                        <Image src={"/btc.png"} height={150} width={150} alt={coin.name} title={coin.name} />
-                    </div>
+    <Wrapper>
+         <div>
+            <div style={{ flex: 2 }}>
+                <NameCol>
+                    <CoinIcon>
+                        <Image src={coin.iconUrl} width={50} height={50} alt={coin.name} title={coin.name} />
+                    </CoinIcon>
                     <div>
-                        <div className={styles.primary}>{coin.name}</div>
-                        <div className={styles.secondary}>{coin.symbol}</div>
+                        <Primary>{coin.name}</Primary>
+                        <Secondary>{coin.symbol}</Secondary>
                     </div>
-                </div>
+                </NameCol>
             </div>
 
             <div style={{ flex: 2 }}>
-                <div className={styles.primary}>{Moralis.Units.FromWei(coin.balance)}</div>
+                <Primary>{'$'} {parseFloat(coin.price)}</Primary>
+                <Secondary>{'$'} {parseFloat(coin.price).toFixed(2)}</Secondary>
             </div>
 
-            <div style={{ flex: 2 }} className={styles.left}>
-                <div className={styles.primary}>{'$'} {Moralis.Units.FromWei(coin.balance) * 5}</div>
-                <div className={styles.secondary}>{coin.balanceCoin} {coin.symbol}</div>
+            <div style={{ flex: 1 }}>
+              <Percent style={{ color: coin.change < 0 ? '#ef4b09' : '#66BB6A' }}>
+                {coin.change}%
+              </Percent>
             </div>
+
+            <div style={{ flex: 2 }}>
+                <ChartDrawing>
+                    <Line data={data} options={options} width={400} height={150} />
+                </ChartDrawing>
+            </div>
+
+
         </div>
-    </div>
+    </Wrapper>
+    
   )
 }
 
 export default Coin
+
+
+const Wrapper = styled.div`
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+
+    & > div {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+    }
+`
+
+const NameCol = styled.div`
+    display: flex;
+    align-items: center;
+`
+
+const CoinIcon = styled.div`
+    width: 1.8rem;
+    margin-right: 1rem;
+`
+
+const Primary = styled.div`
+    margin-bottom: 0.1rem;
+`
+
+const Secondary = styled.div`
+    color: #8a919e;
+    font-size: 0.8rem;
+`
+
+const ChartDrawing = styled.div`
+    width: 15rem;
+    height: 100%;
+`
+
+const Percent = styled.div`
+    color: #66BB6A;
+    display: flex;
+    align-items: center;
+`

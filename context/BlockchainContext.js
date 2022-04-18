@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { faker } from '@faker-js/faker'
 import { useMoralis } from 'react-moralis'
+import { useERC20Balances } from 'react-moralis'
 
 export const BlockchainContext = createContext();
 
@@ -12,19 +13,21 @@ export const BlockchainProvider = ({ children }) => {
     const [currentAccount, setCurrentAccount] = useState()
     const [formattedAccount, setFormattedAccount] = useState()
 
-    useEffect(() => {
-        if (!currentAccount) return
-        requestToGetCurrentUserInfo(currentAccount);
-    }, [currentAccount])
 
     useEffect(() => {
         if (isAuthenticated){
             const account = user.get('ethAddress');
             const formatAccount = account.slice(0, 7) + '...' + account.slice(35)
+
             setFormattedAccount(formatAccount)
             setCurrentAccount(account)
         }
-    }, [isAuthenticated, enableWeb3])
+    }, [isAuthenticated, user])
+
+    useEffect(() => {
+        if (!currentAccount) return
+        requestToGetCurrentUserInfo(currentAccount);
+    }, [currentAccount])
 
     useEffect(() => {
         if (!currentAccount) return
@@ -78,7 +81,7 @@ export const BlockchainProvider = ({ children }) => {
         formattedAccount,
         signOut,
         isAuthenticated,
-        accountName
+        accountName,
     }}>
         {children}
     </BlockchainContext.Provider>
