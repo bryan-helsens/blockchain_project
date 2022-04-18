@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import Asset from './modal/Asset'
 import Coins from './modal/Coins'
+import Transactions from './modal/Transactions'
 
 
 const TransferModal = ({apiCoins}) => {
@@ -26,6 +27,11 @@ const TransferModal = ({apiCoins}) => {
             case "coins":
                 return (
                     <Coins apiCoins={apiCoins} />
+                )
+
+            case "transactions":
+                return (
+                    <Transactions />
                 )
         }
     }

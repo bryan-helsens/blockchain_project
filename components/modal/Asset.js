@@ -1,7 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react'
 import styled from 'styled-components'
 import MyCoin from '../MyCoin'
-import { BlockchainContext } from '../../context/BlockchainContext'
 import { useERC20Balances, useMoralisWeb3Api } from 'react-moralis'
 import Moralis from 'moralis'
 
@@ -34,8 +33,6 @@ const Asset = () => {
           }
       })
   },[])
-
-  console.log(data);
 
   return (
     <Wrapper>
