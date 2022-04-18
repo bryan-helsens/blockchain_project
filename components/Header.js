@@ -18,8 +18,6 @@ const styles = {
 const Header = () => {
     const { connectWallet, signOut, currentAccount, isAuthenticated, formattedAccount, accountName } = useContext(BlockchainContext);
 
-    console.log(currentAccount, formattedAccount);
-
   return (
     <div className={styles.wrapper}>
 
